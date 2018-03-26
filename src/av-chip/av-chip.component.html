@@ -1,0 +1,8 @@
+<mat-chip style="line-height: 6px"
+          class="chip-property"
+          [ngClass]="color"
+          [ngStyle]="{'border-color' : color}"
+          [matTooltip]="getTooltip(property)"
+          matTooltipPosition = "above">
+          {{label}}
+</mat-chip>

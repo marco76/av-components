@@ -1,0 +1,25 @@
+<mat-input-container>
+<input matInput [placeholder]="autoProperties.placeholder"
+       id="selectedItem"
+       name="selectedItem"
+       [(ngModel)]="inputText"
+       (input)="onChange()"
+       [matAutocomplete]="auto">
+
+<mat-icon matSuffix (click)="onClearContent()" style="cursor: pointer;">{{autoProperties.cancelIcon}}</mat-icon>
+<mat-autocomplete #auto="matAutocomplete" (optionSelected)="onItemSelected($event)">
+
+  <ng-container *ngIf="isObservable">
+    <mat-option *ngFor="let selected of selectableObjects | async" [value]="selected">
+      {{ selected.label }}
+    </mat-option>
+  </ng-container>
+
+  <ng-container *ngIf="!isObservable">
+  <mat-option *ngFor="let selected of selectableObjects" [value]="selected">
+    {{ selected.label }}
+  </mat-option>
+  </ng-container>
+</mat-autocomplete>
+
+</mat-input-container>

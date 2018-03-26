@@ -1,0 +1,41 @@
+<h2>Autocomplete</h2>
+
+<h3>Typescript</h3>
+
+<av-chip color="red" label="cool"></av-chip>
+<av-chip color="green" label="green"></av-chip>
+<av-chip color="yellow" label="with tooltip" [properties]="{tooltip:'This is a tooltip'}"></av-chip>
+
+<textarea textarea highlight-js [options]="{}" [lang]="'typescript'">
+  const demoObjects = ([
+      new AutocompleteItem('cool', 'value1', {name: 'object1'}),
+      new AutocompleteItem('cool2', 'value2', {name: 'object2'})
+    ]);
+</textarea>
+
+<h3>Work with objects</h3>
+<textarea highlight-js [options]="{}" [lang]="'typescript'">
+  <av-autocomplete [selectableObjects] = "arrayOfObjects" (selectItem)="onSelected($event)" ></av-autocomplete>
+</textarea>
+
+<av-autocomplete [selectableObjects] = "arrayOfObjects" (selectItem)="onSelected($event)"></av-autocomplete>
+<div>Selected : <span *ngIf="selectedItem">{{getJSON(selectedItem)}}</span></div>
+
+<h3>Custom icon</h3>
+<div>
+  <textarea highlight-js [options]="{}" [lang]="'typescript'">
+    <av-autocomplete [selectableObjects] = "arrayOfObjects" [properties]="{cancelIcon: 'explore'}" (selectItem)="onSelected($event)" ></av-autocomplete>
+  </textarea>
+
+  <p>
+    <av-autocomplete [selectableObjects] = "arrayOfObjects" [properties]="{cancelIcon: 'explore'}" (selectItem)="onSelected1($event)"></av-autocomplete>
+  </p>
+  <div>
+    Selected : <span *ngIf="selectedItem1">{{getJSON(selectedItem1)}}</span>
+  </div>
+</div>
+
+<h3>Autocomplete Chip</h3>
+<av-autocomplete-chip [selectableObjects] = "arrayOfObjects" (selectItem)="onSelected($event)"></av-autocomplete-chip>
+
+
