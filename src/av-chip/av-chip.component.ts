@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {selector} from 'rxjs/operator/publish';
+import {Component, Input, OnInit} from '@angular/core';
+import {AvChipProperties} from './AvChipProperties';
 
 @Component(
   {
@@ -10,20 +10,25 @@ import {selector} from 'rxjs/operator/publish';
 )
 export class AvChip implements OnInit {
 
+  @Input() label: string;
+  @Input() color: string;
+  @Input() properties?: AvChipProperties;
+
   ngOnInit() {
 
+    if (!this.color) {
+      this.color = '#777777';
+    }
+    if (!this.label) {
+      this.label = 'LABEL';
+    }
+
   }
 
-  getColor(): string {
-    return 'red';
-  }
-
-  getTooltip(){
-    return 'tooltip to do';
-  }
-
-  getValueToShow(){
-    return 'getValueToShow';
+  getTooltip() {
+    if (this.properties && this.properties.tooltip) {
+      return this.properties.tooltip;
+    }
   }
 
 }
