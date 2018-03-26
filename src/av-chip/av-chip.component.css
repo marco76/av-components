@@ -1,0 +1,10 @@
+.chip-property {
+  border: 1px solid grey;
+  font-size: x-small;
+  color: #777777 !important;
+  background-color: white !important;
+  padding: 7px 10px !important;
+  border-radius: 30px !important;
+  line-height: 2px !important;
+  cursor: default;
+}
