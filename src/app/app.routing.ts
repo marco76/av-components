@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AppComponent} from './app.component';
 import {AutocompleteComponent} from './components/autocomplete/autocomplete.component';
+import {TableComponent} from './components/table/table.component';
 
 const routes: Routes = [
   {
@@ -11,6 +12,10 @@ const routes: Routes = [
   {
     path: 'autocomplete',
     component: AutocompleteComponent
+  },
+  {
+    path: 'table',
+    component: TableComponent
   }
 ];
 

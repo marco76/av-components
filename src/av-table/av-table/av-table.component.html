@@ -1,0 +1,101 @@
+<div class="example-header">
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+</div>
+<div *ngIf="!dataSource">
+  The datasource is not configured!
+</div>
+
+
+<div class="example-container mat-elevation-z8" *ngIf="dataSource && dataSource.paginator">
+
+  <mat-toolbar class="av-toolbar">
+    <mat-toolbar-row class="av-left" *ngIf="!isTableReadonly()">
+      <button mat-button color="primary" (click)="onCreateRecord()">
+        Add
+      </button>
+      <span *ngIf="isSelectionEditable">
+          <button mat-button color="primary" (click)="onEditRecord()">Edit <mat-icon>mode_edit</mat-icon> </button>
+      </span>
+
+      <span *ngIf="isSelectionDeletable">
+      <button mat-button color="warn" (click)="onDelete()">Löschen <mat-icon>delete</mat-icon> </button>
+      </span>
+
+      <span class="push bottom av-toolbar-infos">
+        {{numberOfSelectedItems}} / {{dataSource.data.length}}
+      </span>
+    </mat-toolbar-row>
+
+    <mat-toolbar-row *ngIf="isTableReadonly()" style="justify-content: normal" class="status-reason">
+      The table is in read-only mode <span *ngIf="getTableStatusReason()">&nbsp;({{getTableStatusReason()}})</span>
+    </mat-toolbar-row>
+
+  </mat-toolbar>
+  <mat-table [dataSource]="dataSource" matSort>
+
+    <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef class="select">
+        <mat-checkbox (change)="onCheckAll($event)"></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="select">
+        <mat-checkbox [checked]="row.isSelected" (change)="onCheckElement($event, row)"></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <span>
+        <ng-container [matColumnDef]="column.fieldName" *ngFor="let column of dataColumns;">
+          <mat-header-cell *matHeaderCellDef mat-sort-header
+                           [ngStyle]="getStyle(column)">{{column.label}}</mat-header-cell>
+          <mat-cell *matCellDef="let row" [ngStyle]="getStyle(column)">
+            <span *ngIf="column.type && isColumnDate(column)"> {{row[column.fieldName] | date:'dd.MM.yyyy'}}</span>
+            <span *ngIf="column.type && isColumnTable(column)">
+              <mat-icon (click)="onDetailGrid(row, column.fieldName)" class="detail-table">list_alt</mat-icon>
+            </span>
+            <span *ngIf="isPdf(row[column.fieldName])"><mat-icon>attachment</mat-icon></span>
+            <span *ngIf="!isPdf(row[column.fieldName]) && !column.type">{{row[column.fieldName]}}</span>
+          </mat-cell>
+
+        </ng-container>
+    </span>
+
+    <mat-header-row *matHeaderRowDef="columnsToShow"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: columnsToShow;"
+             matRipple
+             [@itemStatus]="row.status"
+             class="element-row"
+             [avRowDetail]="row"
+             [rowDetailTemplate]="row.selectedTemplate"
+             [expanded]="row.isExpanded"
+    >
+    </mat-row>
+
+    <ng-container matColumnDef="expand">
+      <mat-header-cell *matHeaderCellDef class="expand">
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="expand">
+        <mat-icon (click)="onSelectExpand(row)">{{row.isExpanded? 'expand_less' : 'expand_more'}}</mat-icon>
+      </mat-cell>
+    </ng-container>
+  </mat-table>
+  <!-- cool but not completely implemented yet: config editable from gui
+   <mat-icon (click)="onEditRows()" class="edit">edit</mat-icon>
+   -->
+
+</div>
+<mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" *ngIf="dataSource"></mat-paginator>
+
+<ng-template #panelTemplate let-element>
+  <div class="mat-row" [@detailExpand] style="overflow: hidden">
+    <av-table-detail-panel [data]="dataColumns" [item]="element" *ngIf="detailData">
+    </av-table-detail-panel>
+  </div>
+</ng-template>
+
+<ng-template #gridTemplate let-element>
+  <div class="mat-row" [@detailExpand] style="overflow: hidden" class="detail-table-container">
+    <av-table-detail-table [entry]="element[element.selectedColumn]" [configuration]="standardDetailGridConfiguration" *ngIf="detailData">
+    </av-table-detail-table>
+  </div>
+</ng-template>

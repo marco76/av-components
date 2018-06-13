@@ -1,0 +1,80 @@
+::ng-deep snack-bar-container {
+  font-size: 2em !important;
+}
+
+::ng-deep snack-bar-container.custom .mat-simple-snackbar {
+  font-size: 0.6em;
+}
+::ng-deep .mat-snack-bar-container.success-panel {
+  background-color: red!important;
+}
+
+::ng-deep .mat-snack-bar-container.success-panel {
+  background-color: red!important;
+}
+::ng-deep .snack-bar-container.success-panel {
+  background-color: red!important;
+}
+
+::ng-deep success-panel {
+  background-color: red!important;
+}
+
+.success-panel {
+  background-color: red!important;
+  background: royalblue;
+}
+
+::ng-deep .success-panel {
+  background-color: red!important;
+}
+
+::ng-deep success-panel {
+  background-color: red!important;
+}
+
+::ng-deep mat-snack-bar-container.success-panel {
+  background-color: red!important;
+}
+
+::ng-deep snack-bar-container.info::before,
+::ng-deep snack-bar-container.success::before,
+::ng-deep snack-bar-container.warning::before,
+::ng-deep snack-bar-container.error::before {
+  color: white;
+  float: left;
+  line-height: 0.65em;
+  margin-right: 0.6em;
+}
+
+::ng-deep snack-bar-container.info {
+  background-color: #03A9F4;
+}
+
+::ng-deep snack-bar-container.info::before {
+  content: "info";
+}
+
+::ng-deep snack-bar-container.success {
+  background-color: #8BC34A;
+}
+
+::ng-deep snack-bar-container.success::before {
+  content: "check";
+}
+
+::ng-deep snack-bar-container.warning {
+  background-color: #FFC107;
+}
+
+::ng-deep snack-bar-container.warning::before {
+  content: "warning";
+}
+
+::ng-deep snack-bar-container.error {
+  background-color: #F44336;
+}
+
+::ng-deep snack-bar-container.error::before {
+  content: "error";
+}

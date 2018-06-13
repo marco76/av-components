@@ -39,3 +39,11 @@
 <av-autocomplete-chip [selectableObjects] = "arrayOfObjects" (selectItem)="onSelected($event)"></av-autocomplete-chip>
 
 
+<button mat-button (click)="openSnackBar('This is an info feedback.', 'info')">Info</button>
+<button mat-button (click)="openSnackBar('This is a success feedback.','success')">Success</button>
+<button mat-button (click)="openSnackBar('This is a warning feedback.','warning')">Warning</button>
+<button mat-button (click)="openSnackBar('This is a error feedback.','error')">Error</button>
+
+
+
+

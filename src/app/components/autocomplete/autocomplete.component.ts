@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AvAutocompleteItem} from '../../../av-autocomplete/AvAutocompleteItem';
 import 'rxjs/add/observable/of';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mergeMap';
+import { AvSnackBar } from '../../../av-snackbar/av-snack-bar.component';
 
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  styleUrls: ['./autocomplete.component.css']
+  styleUrls: ['./autocomplete.component.css'],
+  providers: [AvSnackBar]
 })
 export class AutocompleteComponent implements OnInit {
 
@@ -17,6 +19,7 @@ export class AutocompleteComponent implements OnInit {
   selectedItem: any;
   selectedItem1: any;
 
+  constructor( public avSnackBar: AvSnackBar) {}
 
   ngOnInit(): void {
     const demoObjects = ([
@@ -40,6 +43,10 @@ export class AutocompleteComponent implements OnInit {
       return JSON.stringify(item);
     }
     return '';
+  }
+
+  openSnackBar(message: string, status: string) {
+   this.avSnackBar.openSnackBar(message, status);
   }
 
 }
