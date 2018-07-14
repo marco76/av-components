@@ -1,10 +1,14 @@
+.confirm-action-dialog {
+  min-width: 400px !important;
+}
+
 .example-container {
   display: flex;
   flex-direction: column;
   min-width: 300px;
 }
 
-.example-header {
+.header {
   min-height: 64px;
   padding: 8px 24px 0;
 }
@@ -47,7 +51,7 @@
 
 .mat-toolbar-row {
   justify-content: space-between;
-  height: 30px!important;
+  height: 50px!important;
 }
 
 .edit{
@@ -78,3 +82,38 @@
 .detail-table-container {
   margin-left: 150px;
 }
+
+.download {
+  cursor: pointer;
+}
+
+.av-chip {
+  border-width: 1px;
+  border-color: gray;
+  margin: 5px;
+  border-style: solid;
+  border-radius: 22px;
+  font-size: xx-small;
+  padding: 2px 5px 2px 5px;
+}
+
+.element-row {
+  border-bottom-width: 1px;
+}
+.element-row-expanded {
+  border-bottom-width: 0;
+}
+
+.detail-row-opened {
+  border-bottom-width: 1px;
+}
+
+.mat-row-detail {
+  background-color: ghostwhite;
+  border-bottom-color: gray;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding-left: 50px;
+}
+
+

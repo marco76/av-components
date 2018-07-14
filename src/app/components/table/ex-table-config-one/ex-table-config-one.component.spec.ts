@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AvColumnPropertiesComponent } from './av-column-properties.component';
+import { ExTableConfigOneComponent } from './ex-table-config-one.component';
 
-describe('AvColumnPropertiesComponent', () => {
-  let component: AvColumnPropertiesComponent;
-  let fixture: ComponentFixture<AvColumnPropertiesComponent>;
+describe('ExTableConfigOneComponent', () => {
+  let component: ExTableConfigOneComponent;
+  let fixture: ComponentFixture<ExTableConfigOneComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AvColumnPropertiesComponent ]
+      declarations: [ ExTableConfigOneComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AvColumnPropertiesComponent);
+    fixture = TestBed.createComponent(ExTableConfigOneComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

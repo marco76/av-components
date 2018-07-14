@@ -1,6 +1,28 @@
 <p>
-  Here comes the table!
-</p>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Simple array!
+      </mat-panel-title>
+      <mat-panel-description>
+
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+
+  <mat-form-field style="width: 80vw">
+  <textarea #simpleArrayInput matInput value="{{getJSON(simpleArrayView)}}"
+            matTextareaAutosize cols="50">
+  </textarea>
+  </mat-form-field>
+  <button (click)="updateSimpleArray(simpleArrayInput.value)">Update</button>
+
+
+</mat-expansion-panel>
 <p>
-  <app-av-table [dataSet]="dataset" ></app-av-table>
+  <app-av-table [dataSet]="simpleArray"></app-av-table>
 </p>
+
+<app-ex-table-config-one>
+
+</app-ex-table-config-one>

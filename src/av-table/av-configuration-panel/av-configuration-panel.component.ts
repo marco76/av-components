@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit, Output, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {AvTableColumnConfig} from "../av-table/AvTableColumnConfig";
-import {AvColumnPropertiesComponent} from "../av-column-properties/av-column-properties.component";
-import {AvTableConfig} from "../av-table/AvTableConfig";
-import {AvTablePropertiesPanelComponent} from "../av-table-properties-panel/av-table-properties-panel.component";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {AvTableColumnConfig} from '../av-table/AvTableColumnConfig';
+import {AvColumnPropertiesComponent} from '../av-column-properties/av-column-properties.component';
+import {AvTableConfig} from '../av-table/AvTableConfig';
+import {AvTablePropertiesPanelComponent} from '../av-table-properties-panel/av-table-properties-panel.component';
 
 @Component({
   selector: 'app-av-configuration-panel',
@@ -13,16 +13,16 @@ import {AvTablePropertiesPanelComponent} from "../av-table-properties-panel/av-t
 export class AvConfigurationPanelComponent implements OnInit {
 
   @ViewChild(AvColumnPropertiesComponent)
-  private avColumnPropertiesComponent : AvColumnPropertiesComponent;
+  private avColumnPropertiesComponent: AvColumnPropertiesComponent;
   @ViewChild(AvTablePropertiesPanelComponent)
-  private avTablePropertiesPanelComponent : AvTablePropertiesPanelComponent;
+  private avTablePropertiesPanelComponent: AvTablePropertiesPanelComponent;
 
   @Output()
-  public tableConfiguration : AvTableConfig;
+  public tableConfiguration: AvTableConfig;
 
-  columnsDefinition : Array<AvTableColumnConfig>;
-  originalConfiguration : AvTableConfig;
-  originalColumnsDefinition : Array<AvTableColumnConfig>;
+  columnsDefinition: Array<AvTableColumnConfig>;
+  originalConfiguration: AvTableConfig;
+  originalColumnsDefinition: Array<AvTableColumnConfig>;
 
   constructor(public dialogRef: MatDialogRef<AvConfigurationPanelComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) { }
@@ -34,16 +34,15 @@ export class AvConfigurationPanelComponent implements OnInit {
     this.tableConfiguration = this.data.tableConfiguration;
   }
 
-  onSave(){
+  onSave() {
     this.dialogRef.close(new AvTableConfig(this.avColumnPropertiesComponent.updatedColumnsDef, this.avTablePropertiesPanelComponent.tableConfig.properties));
   }
 
-  updateConfiguration(tableConfiguration : AvTableConfig){
-    console.log('tableConfiguration');
+  updateConfiguration(tableConfiguration: AvTableConfig) {
     this.tableConfiguration = tableConfiguration;
   }
 
-  onExit(){
+  onExit() {
     this.dialogRef.close(new AvTableConfig(this.originalColumnsDefinition, this.originalConfiguration.properties));
   }
 }

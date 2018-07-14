@@ -1,4 +1,4 @@
-<div class="example-header">
+<div class="header">
   <mat-form-field>
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
   </mat-form-field>
@@ -7,11 +7,10 @@
   The datasource is not configured!
 </div>
 
-
 <div class="example-container mat-elevation-z8" *ngIf="dataSource && dataSource.paginator">
 
   <mat-toolbar class="av-toolbar">
-    <mat-toolbar-row class="av-left" *ngIf="!isTableReadonly()">
+    <mat-toolbar-row class="av-left" *ngIf="!isTableReadOnly">
       <button mat-button color="primary" (click)="onCreateRecord()">
         Add
       </button>
@@ -28,7 +27,7 @@
       </span>
     </mat-toolbar-row>
 
-    <mat-toolbar-row *ngIf="isTableReadonly()" style="justify-content: normal" class="status-reason">
+    <mat-toolbar-row *ngIf="isTableReadOnly" style="justify-content: normal" class="status-reason">
       The table is in read-only mode <span *ngIf="getTableStatusReason()">&nbsp;({{getTableStatusReason()}})</span>
     </mat-toolbar-row>
 
@@ -48,23 +47,32 @@
         <ng-container [matColumnDef]="column.fieldName" *ngFor="let column of dataColumns;">
           <mat-header-cell *matHeaderCellDef mat-sort-header
                            [ngStyle]="getStyle(column)">{{column.label}}</mat-header-cell>
-          <mat-cell *matCellDef="let row" [ngStyle]="getStyle(column)">
+          <mat-cell *matCellDef="let row" [ngStyle]="getStyle(column)" [ngClass]="getClass(column)">
+                <span *ngIf="isText(column)">{{row[column.fieldName]}}</span>
+
             <span *ngIf="column.type && isColumnDate(column)"> {{row[column.fieldName] | date:'dd.MM.yyyy'}}</span>
+            <span *ngIf="column.type && isColumnArray(column)">
+              <mat-chip-list>
+                <span *ngFor="let element of row[column.fieldName]">
+                  <mat-basic-chip class="av-chip">{{element}}</mat-basic-chip>
+                </span>
+              </mat-chip-list></span>
             <span *ngIf="column.type && isColumnTable(column)">
-              <mat-icon (click)="onDetailGrid(row, column.fieldName)" class="detail-table">list_alt</mat-icon>
+              <mat-icon (click)="onDetailGrid(row, column.fieldName, column)" class="detail-table" matTooltip="Show detail table">list_alt</mat-icon>
             </span>
-            <span *ngIf="isPdf(row[column.fieldName])"><mat-icon>attachment</mat-icon></span>
-            <span *ngIf="!isPdf(row[column.fieldName]) && !column.type">{{row[column.fieldName]}}</span>
-          </mat-cell>
+            <span *ngIf="isPdf(column)" (click)="onDownloadFile(row[column.fieldName])" matTooltip="Open attachment"><mat-icon>attachment</mat-icon></span>
+           </mat-cell>
 
         </ng-container>
     </span>
 
     <mat-header-row *matHeaderRowDef="columnsToShow"></mat-header-row>
+
+    <!-- the standard row definition -->
     <mat-row *matRowDef="let row; columns: columnsToShow;"
              matRipple
              [@itemStatus]="row.status"
-             class="element-row"
+             [ngClass]="{'element-row-expanded': row.isExpanded, 'element-row': !row.isExpanded}"
              [avRowDetail]="row"
              [rowDetailTemplate]="row.selectedTemplate"
              [expanded]="row.isExpanded"
@@ -75,7 +83,7 @@
       <mat-header-cell *matHeaderCellDef class="expand">
       </mat-header-cell>
       <mat-cell *matCellDef="let row" class="expand">
-        <mat-icon (click)="onSelectExpand(row)">{{row.isExpanded? 'expand_less' : 'expand_more'}}</mat-icon>
+        <mat-icon (click)="onSelectExpand(row)" matTooltip="Show other columns">{{row.isExpanded? 'expand_less' : 'expand_more'}}</mat-icon>
       </mat-cell>
     </ng-container>
   </mat-table>
@@ -84,18 +92,20 @@
    -->
 
 </div>
+<!-- todo Marco : configurable options -->
 <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="10" *ngIf="dataSource"></mat-paginator>
 
 <ng-template #panelTemplate let-element>
-  <div class="mat-row" [@detailExpand] style="overflow: hidden">
+  <div class="mat-row mat-row-detail" [@detailExpand] style="overflow: hidden">
     <av-table-detail-panel [data]="dataColumns" [item]="element" *ngIf="detailData">
     </av-table-detail-panel>
   </div>
 </ng-template>
 
 <ng-template #gridTemplate let-element>
-  <div class="mat-row" [@detailExpand] style="overflow: hidden" class="detail-table-container">
-    <av-table-detail-table [entry]="element[element.selectedColumn]" [configuration]="standardDetailGridConfiguration" *ngIf="detailData">
+  <div class="mat-row detail-table-container" [@detailExpand] style="overflow: hidden">
+    <av-table-detail-table [entry]="element[element.selectedColumn]"
+                           [configuration]="getDetailConfiguration(element.selectedColumn)" *ngIf="detailData">
     </av-table-detail-table>
   </div>
 </ng-template>

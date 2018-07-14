@@ -42,6 +42,7 @@
     "@angular/http": "^6.0.4",
     "@angular/language-service": "^6.0.4",
     "@angular/material": "^6.2.1",
+    "@angular/material-moment-adapter": "^6.0.4",
     "@angular/platform-browser": "^6.0.4",
     "@angular/platform-browser-dynamic": "^6.0.4",
     "@angular/router": "^6.0.4",

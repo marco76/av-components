@@ -1,20 +1,20 @@
 <mat-card>
-  <mat-card-content style="width: 400px">
-<mat-tab-group>
-  <mat-tab label="Table">
-    <app-av-table-properties-panel [tableConfig]="tableConfiguration"></app-av-table-properties-panel>
-  </mat-tab>
-  <mat-tab label="Columns">
-    <app-av-column-properties [columnsDefinition]="columnsDefinition" ></app-av-column-properties>
-  </mat-tab>
-</mat-tab-group>
+  <mat-card-content class="card">
+    <mat-tab-group>
+      <mat-tab label="Table">
+        <app-av-table-properties-panel [tableConfig]="tableConfiguration"></app-av-table-properties-panel>
+      </mat-tab>
+      <mat-tab label="Columns">
+        <app-av-column-properties [columnsDefinition]="columnsDefinition"></app-av-column-properties>
+      </mat-tab>
+    </mat-tab-group>
   </mat-card-content>
   <mat-card-footer>
-<button mat-raised-button color="primary" (click)="onSave()">
-  Save
-</button>
-<button mat-raised-button color="primary" (click)="onExit()">
-  Cancel
-</button>
+    <button mat-raised-button color="primary" (click)="onSave()">
+      Save
+    </button>
+    <button mat-raised-button color="primary" (click)="onExit()">
+      Cancel
+    </button>
   </mat-card-footer>
 </mat-card>

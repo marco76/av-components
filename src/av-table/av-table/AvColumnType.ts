@@ -1,3 +1,10 @@
 export enum AvColumnType {
-  ANY, NUMBER, DATE, STRING, ARRAY, BOOLEAN, TABLE
+  ANY = 'ANY',
+  NUMBER= 'NUMBER',
+  DATE= 'DATE',
+  STRING= 'STRING',
+  ARRAY= 'ARRAY',
+  BOOLEAN= 'BOOLEAN',
+  TABLE= 'TABLE',
+  FILE = 'FILE'
 }

@@ -1,6 +1,6 @@
 
 import { NgModule } from '@angular/core';
-import { MatAutocompleteModule, MatIconModule, MatInputModule, MatSnackBarModule} from '@angular/material';
+import {MatAutocompleteModule, MatExpansionModule, MatIconModule, MatInputModule, MatSnackBarModule} from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
@@ -13,13 +13,15 @@ import { AvAutocompleteChipModule} from './av-autocomplete-chip/av-autocomplete-
 import { AvTwitterCardModule} from '../av-twitter-card/av-twitter-card.module';
 import { AvTableModule } from '../av-table/av-table.module';
 import { TableComponent } from './components/table/table.component';
+import { ExTableConfigOneComponent } from './components/table/ex-table-config-one/ex-table-config-one.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     AutocompleteComponent,
-    TableComponent
+    TableComponent,
+    ExTableConfigOneComponent
   ],
   imports: [
     AppRoutingModule,
@@ -32,7 +34,8 @@ import { TableComponent } from './components/table/table.component';
     HighlightJsModule, AvChipModule,
     CommonModule, AvAutocompleteChipModule,
     AvTwitterCardModule,
-    AvTableModule
+    AvTableModule,
+    MatExpansionModule
 
   ],
   providers: [],

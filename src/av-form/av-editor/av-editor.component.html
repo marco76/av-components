@@ -1,0 +1,28 @@
+<div class="container" class="container-column">
+  <mat-tab-group>
+    <mat-tab label="Data">
+      <form [formGroup]="form">
+        <div *ngFor="let column of dataColumns" class="form-row">
+          <app-av-form-element [form]="form"
+                               [element]="column"
+                               [record]="editedObject">
+
+          </app-av-form-element>
+        </div>
+
+        <button mat-button (click)="onSave()">
+          Save
+        </button>
+        <button mat-button (click)="onExit()">
+          Abbrechen
+        </button>
+
+      </form>
+    </mat-tab>
+    <mat-tab label="Detail"></mat-tab>
+   </mat-tab-group>
+
+
+
+
+</div>

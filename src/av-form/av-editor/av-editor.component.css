@@ -1,5 +1,6 @@
 .container {
   display: flex;
+  overflow: scroll;
 }
 .container-column {
   justify-content: center;

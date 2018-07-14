@@ -1,10 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {AvAutocompleteItem} from '../../../av-autocomplete/AvAutocompleteItem';
 import 'rxjs/add/observable/of';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/mergeMap';
-import { AvSnackBar } from '../../../av-snackbar/av-snack-bar.component';
 
 @Component({
   selector: 'app-table',
@@ -13,10 +10,27 @@ import { AvSnackBar } from '../../../av-snackbar/av-snack-bar.component';
   providers: []
 })
 export class TableComponent implements OnInit {
-  const dataset = [{'name': 'Marco'}, {'name': 'Stephan'}];
+   simpleArray = [{'uid' : '123434','name': 'Marco Molteni', 'role': 'developer'}, {
+     'uid' : '23434234','name': 'Bugs Bunny', 'role': 'actor'},
+     {'uid' : '3234234','name': 'Tony Stark', 'role': 'Iron Man'}]
+   simpleArrayView: Array<any>;
 
   constructor( ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.simpleArrayView = this.basicClone(this.simpleArray);
+  }
 
+  getJSON(object: any): string {
+    return JSON.stringify(object);
+  }
+
+  updateSimpleArray(text: string) {
+      this.simpleArray = JSON.parse(text);;
+      console.log('new array', this.simpleArray);
+  }
+
+  private basicClone<T>(any: T): T {
+    return JSON.parse(JSON.stringify(any));
+  }
 }

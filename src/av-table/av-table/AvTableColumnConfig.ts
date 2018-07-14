@@ -1,4 +1,5 @@
 import {AvColumnType} from './AvColumnType';
+import {AvTableConfig} from './AvTableConfig';
 
 export interface AvTableColumnConfig {
   fieldName: string;
@@ -11,4 +12,6 @@ export interface AvTableColumnConfig {
   order?: number;
   type?: AvColumnType;
   showInDetail?: boolean;
+  default?: any;
+  detailTable?: AvTableConfig;
 }

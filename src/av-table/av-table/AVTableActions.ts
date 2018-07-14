@@ -1,23 +1,6 @@
 export class AVTableActions {
 
-  private _editableRecord : boolean = true;
-  private _deletableRecord : boolean = true;
-  private _addRecord : boolean = true;
-
-  constructor(addRecord?: boolean, editableRecord?: boolean, deletableRecord? : boolean) {
-
-    if (addRecord !== undefined) {
-      this._addRecord = addRecord;
-    }
-
-    if (editableRecord !== undefined) {
-      this._editableRecord = editableRecord;
-    }
-
-    if (deletableRecord !== undefined) {
-      this._deletableRecord = deletableRecord;
-    }
-  }
+  constructor(private _addRecord = true, private _editableRecord = true, private _deletableRecord = true) {}
 
   get editableRecord(): boolean {
     return this._editableRecord;

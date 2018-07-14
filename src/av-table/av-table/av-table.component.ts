@@ -14,18 +14,21 @@ import {MatCheckboxChange, MatPaginator, MatSort, MatTableDataSource} from '@ang
 import {AvTableConfig} from './AvTableConfig';
 import {AvTableColumnConfig} from './AvTableColumnConfig';
 import {MatDialog} from '@angular/material/dialog';
-import {AvEditorComponent} from '../av-editor/av-editor.component';
 import {AVTableTransaction} from './AVTableTransaction';
 import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {AvConfigurationPanelComponent} from '../av-configuration-panel/av-configuration-panel.component';
 import {AvColumnType} from './AvColumnType';
 import {AvTableStatus} from './AvTableStatus';
 import {AvRowDetailDirective} from './av-row-detail.directive';
+import {buildPDF} from '../export/FileHandler';
+import {AvConfirmDialogComponent} from '../av-confirm-dialog/av-confirm-dialog.component';
+import {AvConfirmDialogResponseType} from '../av-confirm-dialog/AvConfirmDialogResponseType';
+import {AvEditorComponent} from '../../av-form/av-editor/av-editor.component';
 
 @Component({
   selector: 'app-av-table',
   templateUrl: './av-table.component.html',
-  styleUrls: ['./av-table.component.css'],
+  styleUrls: ['./av-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('itemStatus',
@@ -50,44 +53,13 @@ import {AvRowDetailDirective} from './av-row-detail.directive';
 })
 export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
-  private _dataSet: MatTableDataSource<any> | Array<any>;
-
-  // Data source: a dataSource or an array must be passed as parameter
-  @Input() // dataSet: MatTableDataSource<any> | Array<any>;
-  get dataSet(): MatTableDataSource<any> | Array<any> {
-    return this._dataSet;
-  }
-
-  set dataSet(data: MatTableDataSource<any> | Array<any>) {
-    if (this._dataSet !== data) {
-      console.log('mark_for_check');
-      this.changeDetector.markForCheck();
-    }
-    this._dataSet = data;
-    console.log('data reassigned');
-  }
-
-  @Input() tableStatus?: AvTableStatus;
-
-  // The AvTableConfig contains the configuration of the table and the columns
-  @Input() configuration?: AvTableConfig = new AvTableConfig([]);
-
-  @Output() transaction?: EventEmitter<AVTableTransaction> = new EventEmitter<AVTableTransaction>();
-  @Input() transactionStatus?: string;
-
-  private paginator: MatPaginator;
-  private sort: MatSort;
-  detailData: Array<AvTableColumnConfig> = [];
-
-  isExpansionDetailRow = (index: any, row: any) => row.hasOwnProperty('detailRow');
   @Input() singleChildRowDetail: boolean;
-
-  private openedRow: AvRowDetailDirective;
 
   @ViewChild(MatSort) set matSort(matsort: MatSort) {
     this.sort = matsort;
     this.setDataSourceAttributes();
   }
+
   @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
     this.paginator = mp;
     this.setDataSourceAttributes();
@@ -96,26 +68,18 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   @ViewChild('panelTemplate') panelTemplate: ElementRef;
   @ViewChild('gridTemplate') gridTemplate: ElementRef;
 
+  private _dataSet: MatTableDataSource<any> | Array<any>;
+  private openedRow: AvRowDetailDirective;
 
-  // https://github.com/angular/material2/issues/10205 : without this declaration it doesn't work//
-  setDataSourceAttributes() {
-    if (this.dataSource) {
-
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-
-    if (this.paginator && this.sort) {
-      this.applyFilter('');
-    }
-    }
-  }
+  columnPropertiesExtracted: any = {showDetail: false};
 
   dataSource: MatTableDataSource<any>;
   dataArray: Array<any>;
   demoMode = false;
+  tableReadOnly = true;
 
-  standardColumns: Array<AvTableColumnConfig>;
-  standardColumnsEnd: Array<AvTableColumnConfig> = [{fieldName: 'expand', label: 'expand'}];
+  technicalColumnsBegin: Array<AvTableColumnConfig>;
+  technicalColumnsEnd: Array<AvTableColumnConfig> = [{fieldName: 'expand', label: 'expand'}];
   columnsToShow: Array<string> = [];
   selectedRows: Array<any> = [];
   isSelectionEditable = false;
@@ -124,9 +88,44 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
   dataColumns: Array<AvTableColumnConfig>;
 
-  constructor(public dialog: MatDialog, private changeDetector: ChangeDetectorRef) {}
+  // Data source: a dataSource or an array must be passed as parameter
+  @Input()
+  get dataSet(): MatTableDataSource<any> | Array<any> {
+    return this._dataSet;
+  }
 
-  onCheckAll($event: any) {
+  set dataSet(data: MatTableDataSource<any> | Array<any>) {
+    if (this._dataSet !== data) {
+      this.changeDetector.markForCheck();
+    }
+    this._dataSet = data;
+  }
+
+  @Input() tableStatus?: AvTableStatus;
+
+  // The AvTableConfig contains the configuration of the table and the columns
+  @Input() configuration?: AvTableConfig = new AvTableConfig(null);
+
+  @Output() transaction?: EventEmitter<AVTableTransaction> = new EventEmitter<AVTableTransaction>();
+  @Input() transactionStatus?: string;
+
+  private paginator: MatPaginator;
+  private sort: MatSort;
+  detailData: Array<AvTableColumnConfig> = [];
+
+  ngOnInit(): void {
+    this.initTable();
+  }
+
+  setDataSourceAttributes() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  constructor(public dialog: MatDialog, private changeDetector: ChangeDetectorRef) {
+  }
+
+  onCheckAll($event) {
     this.selectedRows = [];
 
     if ($event.checked) {
@@ -154,32 +153,20 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.numberOfSelectedItems = this.selectedRows.length;
 
     if (!this.configuration) {
-
       this.isSelectionDeletable = this.numberOfSelectedItems > 0;
       this.isSelectionEditable = this.numberOfSelectedItems === 1;
-
     } else {
-
       if (this.configuration.tableActions.deletableRecord) {
         this.isSelectionDeletable = this.numberOfSelectedItems > 0;
       }
-
       if (this.configuration.tableActions.editableRecord) {
         this.isSelectionEditable = this.numberOfSelectedItems === 1;
       }
     }
   }
 
-  getSelected() {
-    let selected = 0;
-    if (this.dataSource.data) {
-      for (let i = 0; i < this.dataSource.data.length; i++) {
-        if (this.dataSource.data[i].isSelected) {
-          selected++;
-        }
-      }
-    }
-    return selected;
+  get isTableReadOnly() {
+    return this.tableReadOnly;
   }
 
   setAllRecords(status: boolean): void {
@@ -198,27 +185,52 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log('ngAfterViewInit', this.dataSource);
-    console.log('after view init', this.paginator);
-    if (this.configuration) {
-      const isReadOnly = this.setReadOnly(this.configuration);
-      if (this.configuration.properties){
-      this.standardColumns = this.configuration.properties.isReadonly ? [] : [{fieldName: 'select', label: 'select'}];
-    }}
+    this.initializeTechnicalColumns();
   }
 
-  private setReadOnly(configuration: AvTableConfig) {
-    if ( !configuration ) {
-      return true;
+  private initializeTechnicalColumns() {
+    this.technicalColumnsBegin = [];
+
+    if (this.isTechnicalColumnsBeginVisible(this.tableStatus, this.configuration)) {
+      this.tableReadOnly = false;
+    } else {
+      this.tableReadOnly = true;
     }
-    if ( !configuration.properties ) {
-      return true;
+
+    // show the select checkbox only if record and table are editable
+    if (!this.tableReadOnly) {
+      this.technicalColumnsBegin.push({fieldName: 'select', label: 'select'});
+    }
+  }
+
+  /**
+   * Check if the table configuration and the table content allow to update the content
+   * @param {AvTableStatus} tableStatus
+   * @param {AvTableConfig} tableConfiguration
+   * @returns {boolean}
+   */
+  private isTechnicalColumnsBeginVisible(tableStatus: AvTableStatus, tableConfiguration: AvTableConfig) {
+    let visibility = false;
+
+    if (this.tableStatus) {
+      if (this.tableStatus.editable) {
+        visibility = true;
+      } else if (this.tableStatus.editable === false) {
+        visibility = false;
+        return visibility;
+      }
     }
 
     if (this.configuration) {
-      return this.configuration.properties;
+      if (this.configuration.properties) {
+        if (this.configuration.properties.isReadonly) {
+          visibility = false;
+        }
+      }
     }
+    return visibility;
   }
+
 
   applyFilter(filterValue: string) {
     // Remove whitespace
@@ -236,25 +248,15 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
           const position = this.dataSource.data.indexOf(item);
 
           this.dataSource.data.splice(position, 1);
-          this.transactionStatus = undefined;
+          this.transactionStatus = null;
         }
         this.selectedRows = [];
         this.setStatusActions();
       }
     }
-    /*
-    if (changes.configuration){
-      this.updateTableConfiguration(changes.configuration.currentValue as AvTableConfig);
-    }*/
-
     if (changes.dataSet) {
-        this.initTable();
+      this.initTable();
     }
-      //if (!this.columnsToShow) {
-        //this.dataColumns = this.searchColumnDefinition(this.dataSet[0]);
-        //this.columnsToShow = this.setColumnsToShow(this.standardColumns, this.dataColumns, this.standardColumnsEnd);
-   // }
-
   }
 
   private setColumnsToShow(standardColBegin: Array<AvTableColumnConfig>,
@@ -275,11 +277,14 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
       }
 
       if (column.hide && column.showInDetail) {
-        this.detailData.push(column); }
+        this.detailData.push(column);
+      }
     }
 
     for (const column of standardColEnd) {
-      columns.push(column.fieldName);
+      if (this.columnPropertiesExtracted.showDetail) {
+        columns.push(column.fieldName);
+      }
     }
 
     return columns;
@@ -294,48 +299,58 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     return keys;
   }
 
-  ngOnInit(): void {
-    console.log('ngOnInit');
-
-    this.initTable();
-  }
-
   onCreateRecord(): void {
-
     const dialogRef = this.dialog.open(AvEditorComponent, {
-      panelClass : 'confirm-action-dialog',
+      minWidth: '450px',
+      height: '75vh',
+      // 13.06.2018 panelClass to set width and height was KO
       data: {dataColumns: this.dataColumns}
     });
+
+    dialogRef.afterClosed().subscribe(
+      result => {
+        this.transaction.emit(result);
+      }
+    );
   }
 
   onEditRecord(): void {
     const dialogRef = this.dialog.open(AvEditorComponent, {
-      panelClass : 'confirm-action-dialog',
+      minWidth: '450px',
+      maxHeight: '75vh',
+      // 13.06.2018 panelClass to set width and height was KO
       data: {dataColumns: this.dataColumns, edited: this.selectedRows[0]}
     });
 
     dialogRef.afterClosed().subscribe(
       result => {
         console.log('result', result);
-        if (this.transaction) {
-          this.transaction.emit(result);
-        }
+        this.transaction.emit(result);
       }
     );
   }
 
   onDelete(): void {
     if (!this.demoMode) {
-      if(this.transaction) {
-        this.transaction.emit({deletedRecords: this.selectedRows});
-      }
+      const dialogRef = this.dialog.open(AvConfirmDialogComponent, {
+        minWidth: '450px',
+        maxHeight: '75vh'
+      });
+
+      dialogRef.afterClosed().subscribe(
+        result => {
+          switch (result) {
+            case AvConfirmDialogResponseType.OK:
+            { this.transaction.emit({deletedRecords: this.selectedRows}); break; }
+            default: break;
+        }}
+      );
     } else {
       this.deleteRow();
     }
   }
 
   onEditRows(): void {
-    console.log('onEditRows');
     const dialogRef = this.dialog.open(AvConfigurationPanelComponent,
       {
         height: '600px',
@@ -346,22 +361,10 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
     dialogRef.afterClosed()
       .subscribe(
-      result => {
-        console.log('subs', result);
-        if(this.transaction) {
+        result => {
           this.transaction.emit(result);
         }
-        /*
-        let config = <AvTableConfig> result;
-        if (result) {
-          console.log('columnsToShow', this.dataColumns);
-          this.dataColumns = config.columnDefinition;
-          this.columnsToShow = this.setColumnsToShow(this.standardColumns, config.columnDefinition);
-          this.dataSource = null;
-         this.dataSource = new MatTableDataSource<any>(this.dataArray);
-        }*/
-      }
-    );
+      );
   }
 
   getDataColumns() {
@@ -370,29 +373,26 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
   deleteRow() {
     for (const item of this.selectedRows) {
-          item.status = 'deleted';
-          const position = this.dataSource.data.indexOf(item);
+      item.status = 'deleted';
+      const position = this.dataSource.data.indexOf(item);
 
-          this.dataSource.data.splice(position, 1);
-          this.transactionStatus = undefined;
-        }
-        this.selectedRows = [];
-        this.setStatusActions();
+      this.dataSource.data.splice(position, 1);
+      this.transactionStatus = null;
+    }
+    this.selectedRows = [];
+    this.setStatusActions();
   }
 
   isColumnDate(column: AvTableColumnConfig) {
     return AvColumnType.DATE === column.type;
   }
 
-  isColumnTable(column: AvTableColumnConfig) {
-    return AvColumnType.TABLE === column.type;
+      isColumnArray(column: AvTableColumnConfig): boolean {
+    return AvColumnType.ARRAY === column.type;
   }
 
-  isTableReadonly() {
-    if (this.tableStatus && !this.tableStatus.editable) {
-      return true;
-    }
-    return false;
+  isColumnTable(column: AvTableColumnConfig) {
+    return AvColumnType.TABLE === column.type;
   }
 
   getTableStatusReason() {
@@ -410,8 +410,14 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     return {'flex': 1.1};
   }
 
+  getClass(cell: AvTableColumnConfig) {
+    if (AvColumnType.FILE === cell.type) {
+      return 'download';
+    }
+  }
+
   onSelectExpand(row: any) {
-    console.log('expand', row);
+
     row.selectedTemplate = this.panelTemplate;
     if (typeof row.isExpanded === 'undefined') {
       row.isExpanded = false;
@@ -419,7 +425,8 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     row.isExpanded = !row.isExpanded;
   }
 
-  onDetailGrid(row: any, data: string) {
+  onDetailGrid(row: any, data: string, column: AvTableColumnConfig) {
+
     row.selectedTemplate = this.gridTemplate;
     if (typeof row.isExpanded === 'undefined') {
       row.isExpanded = false;
@@ -429,19 +436,48 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     row.selectedColumn = data;
   }
 
-  public standardDetailGridConfiguration = new AvTableConfig([], {isReadonly : true});
+  getDetailConfiguration(column: any): AvTableConfig {
+    for (let i = 0; i < this.dataColumns.length; i++) {
+      if (column === this.dataColumns[i].fieldName) {
+        if (this.dataColumns[i].detailTable) {
+          return this.dataColumns[i].detailTable;
+        } else {
+          return new AvTableConfig(null, {isReadonly: true});
+        }
+      }
+    }
+    return new AvTableConfig([], {isReadonly: true});
+  }
 
-  isPdf(rowElement: any) {
-     if (rowElement && typeof rowElement === 'string' && rowElement.startsWith('JVBERi0x')) {
+  isText(column: AvTableColumnConfig) {
+    if (!column.type) {
+      return true;
+    }
+
+    if (column.type === AvColumnType.STRING) {
+      return true;
+    }
+    if (column.type === AvColumnType.ANY) {
+      return true;
+    }
+    if (column.type === AvColumnType.NUMBER) {
       return true;
     }
 
     return false;
   }
 
-  private initTable() {
-    console.log('init table');
+  isPdf(column: AvTableColumnConfig) {
+    return AvColumnType.FILE === column.type;
+  }
+
+  onDownloadFile(content: string) {
+    buildPDF(content);
+  }
+
+  public initTable() {
     this.changeDetector.detach();
+
     if (this._dataSet instanceof MatTableDataSource) {
       this.dataSource = this._dataSet;
     } else if (this._dataSet instanceof Array) {
@@ -452,19 +488,21 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
       this.dataSource = new MatTableDataSource<any>(this.dataArray);
     }
 
+    this.initializeTechnicalColumns();
     this.dataColumns = [];
 
-    //cool they gave us some config to build the columns
+    // cool they gave us some config to build the columns
     if (this.configuration && this.configuration.columnDefinition) {
       for (const item of this.configuration.columnDefinition) {
         this.dataColumns.push(item);
+        this.calculateColumnsProperties(item);
       }
-      this.columnsToShow = this.setColumnsToShow(this.standardColumns, this.dataColumns, this.standardColumnsEnd);
+      this.columnsToShow = this.setColumnsToShow(this.technicalColumnsBegin, this.dataColumns, this.technicalColumnsEnd);
     } else { // we try to extract the definition from the dataset
       if (this.dataSource.data.length > 0) {
         this.dataColumns = this.searchColumnDefinition(this.dataSource.data[0]);
         if (this.columnsToShow.length === 0) {
-          this.columnsToShow = this.setColumnsToShow(this.standardColumns, this.dataColumns, this.standardColumnsEnd);
+          this.columnsToShow = this.setColumnsToShow(this.technicalColumnsBegin, this.dataColumns, this.technicalColumnsEnd);
         }
       }
     }
@@ -472,5 +510,9 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.changeDetector.reattach();
   }
 
-
+  private calculateColumnsProperties(property: AvTableColumnConfig) {
+    if (property.hide) {
+      this.columnPropertiesExtracted.showDetail = true;
+    }
+  }
 }

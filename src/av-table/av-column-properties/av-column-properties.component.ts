@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {AvTableColumnConfig} from "../av-table/AvTableColumnConfig";
-import { MatSelect, MatTableDataSource} from "@angular/material";
-import { MatDialogRef} from "@angular/material/dialog"
+import {AvTableColumnConfig} from '../av-table/AvTableColumnConfig';
+import { MatSelect, MatTableDataSource} from '@angular/material';
+import { MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-av-column-properties',
@@ -10,35 +10,35 @@ import { MatDialogRef} from "@angular/material/dialog"
 })
 export class AvColumnPropertiesComponent implements OnInit, OnChanges {
 
-  selectedProperty : string;
+  selectedProperty: string;
   propertyDefinition: Array<string> = ['label', 'editable', 'required', 'hide'];
-  displayedColumns = ['fieldName','label'];
-  dataSource : MatTableDataSource<AvTableColumnConfig>;
+  displayedColumns = ['fieldName', 'label'];
+  dataSource: MatTableDataSource<AvTableColumnConfig>;
 
-  @Input() columnsDefinition : Array<AvTableColumnConfig>;
+  @Input() columnsDefinition: Array<AvTableColumnConfig>;
   @Output() updatedColumnsDefinition = new EventEmitter<Array<AvTableColumnConfig>>();
 
-  updatedColumnsDef : Array<AvTableColumnConfig>;
+  updatedColumnsDef: Array<AvTableColumnConfig>;
 
   constructor(public dialogRef: MatDialogRef<AvColumnPropertiesComponent>) {}
 
   ngOnInit() {}
 
-  getColumnsDefinition(){
+  getColumnsDefinition() {
     return this.columnsDefinition;
   }
 
-  onSave(){
+  onSave() {
     this.updatedColumnsDefinition.emit(this.columnsDefinition);
     this.dialogRef.close(this.columnsDefinition);
   }
 
-  onExit(){
+  onExit() {
     this.dialogRef.close(null);
   }
 
-  onSelectionChange($event : MatSelect) {
-    this.displayedColumns= ['fieldName', $event.value];
+  onSelectionChange($event: MatSelect) {
+    this.displayedColumns = ['fieldName', $event.value];
   }
 
   ngOnChanges(changes: SimpleChanges): void {
