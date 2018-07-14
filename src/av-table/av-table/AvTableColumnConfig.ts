@@ -1,5 +1,5 @@
 import {AvColumnType} from './AvColumnType';
-import {AvTableConfig} from './AvTableConfig';
+import {AvTable} from './AvTable';
 
 export interface AvTableColumnConfig {
   fieldName: string;
@@ -13,5 +13,6 @@ export interface AvTableColumnConfig {
   type?: AvColumnType;
   showInDetail?: boolean;
   default?: any;
-  detailTable?: AvTableConfig;
+  detailTable?: AvTable;
+  allowedValues?: any[];
 }

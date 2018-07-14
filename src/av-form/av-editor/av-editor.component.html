@@ -1,6 +1,4 @@
-<div class="container" class="container-column">
-  <mat-tab-group>
-    <mat-tab label="Data">
+<div class="container container-column">
       <form [formGroup]="form">
         <div *ngFor="let column of dataColumns" class="form-row">
           <app-av-form-element [form]="form"
@@ -16,13 +14,5 @@
         <button mat-button (click)="onExit()">
           Abbrechen
         </button>
-
       </form>
-    </mat-tab>
-    <mat-tab label="Detail"></mat-tab>
-   </mat-tab-group>
-
-
-
-
 </div>

@@ -1,0 +1,3 @@
+enum EditType {
+  CREATE, UPDATE
+}

@@ -7,7 +7,7 @@
   The datasource is not configured!
 </div>
 
-<div class="example-container mat-elevation-z8" *ngIf="dataSource && dataSource.paginator">
+<div class="table-container mat-elevation-z8" *ngIf="dataSource && dataSource.paginator">
 
   <mat-toolbar class="av-toolbar">
     <mat-toolbar-row class="av-left" *ngIf="!isTableReadOnly">
@@ -47,22 +47,31 @@
         <ng-container [matColumnDef]="column.fieldName" *ngFor="let column of dataColumns;">
           <mat-header-cell *matHeaderCellDef mat-sort-header
                            [ngStyle]="getStyle(column)">{{column.label}}</mat-header-cell>
+
           <mat-cell *matCellDef="let row" [ngStyle]="getStyle(column)" [ngClass]="getClass(column)">
-                <span *ngIf="isText(column)">{{row[column.fieldName]}}</span>
 
-            <span *ngIf="column.type && isColumnDate(column)"> {{row[column.fieldName] | date:'dd.MM.yyyy'}}</span>
-            <span *ngIf="column.type && isColumnArray(column)">
-              <mat-chip-list>
-                <span *ngFor="let element of row[column.fieldName]">
-                  <mat-basic-chip class="av-chip">{{element}}</mat-basic-chip>
-                </span>
-              </mat-chip-list></span>
-            <span *ngIf="column.type && isColumnTable(column)">
-              <mat-icon (click)="onDetailGrid(row, column.fieldName, column)" class="detail-table" matTooltip="Show detail table">list_alt</mat-icon>
+            <span [ngSwitch]="column.type">
+              <span *ngSwitchCase="'DATE'">{{row[column.fieldName] | date:'dd.MM.yyyy'}}</span>
+              <span *ngSwitchCase="'ARRAY'">
+                <mat-chip-list>
+                  <span *ngFor="let element of row[column.fieldName]">
+                    <mat-basic-chip class="av-chip">{{element}}</mat-basic-chip>
+                  </span>
+                </mat-chip-list>
+              </span>
+              <span *ngSwitchCase="'TABLE'">
+                <mat-icon (click)="onDetailGrid(row, column.fieldName, column)" class="detail-table"
+                          matTooltip="Show detail table">list_alt</mat-icon>
+              </span>
+
+              <span *ngSwitchCase="'FILE'">
+                <span (click)="onDownloadFile(row[column.fieldName])" matTooltip="Open attachment"><mat-icon>attachment</mat-icon></span>
+              </span>
+              <span *ngSwitchDefault>
+                  {{row[column.fieldName]}}
+              </span>
             </span>
-            <span *ngIf="isPdf(column)" (click)="onDownloadFile(row[column.fieldName])" matTooltip="Open attachment"><mat-icon>attachment</mat-icon></span>
-           </mat-cell>
-
+          </mat-cell>
         </ng-container>
     </span>
 
@@ -83,7 +92,9 @@
       <mat-header-cell *matHeaderCellDef class="expand">
       </mat-header-cell>
       <mat-cell *matCellDef="let row" class="expand">
-        <mat-icon (click)="onSelectExpand(row)" matTooltip="Show other columns">{{row.isExpanded? 'expand_less' : 'expand_more'}}</mat-icon>
+        <mat-icon (click)="onSelectExpand(row)" matTooltip="Show other columns">{{row.isExpanded? 'expand_less' :
+          'expand_more'}}
+        </mat-icon>
       </mat-cell>
     </ng-container>
   </mat-table>
@@ -105,7 +116,8 @@
 <ng-template #gridTemplate let-element>
   <div class="mat-row detail-table-container" [@detailExpand] style="overflow: hidden">
     <av-table-detail-table [entry]="element[element.selectedColumn]"
-                           [configuration]="getDetailConfiguration(element.selectedColumn)" *ngIf="detailData">
+                           [configuration]="getDetailConfiguration(element.selectedColumn)"
+                           *ngIf="detailData">
     </av-table-detail-table>
   </div>
 </ng-template>

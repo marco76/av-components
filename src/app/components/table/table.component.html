@@ -10,17 +10,16 @@
     </mat-expansion-panel-header>
 
 
-  <mat-form-field style="width: 80vw">
+    <mat-form-field style="width: 80vw">
   <textarea #simpleArrayInput matInput value="{{getJSON(simpleArrayView)}}"
             matTextareaAutosize cols="50">
   </textarea>
-  </mat-form-field>
-  <button (click)="updateSimpleArray(simpleArrayInput.value)">Update</button>
+    </mat-form-field>
+    <button (click)="updateSimpleArray(simpleArrayInput.value)">Update</button>
 
-
-</mat-expansion-panel>
+  </mat-expansion-panel>
 <p>
-  <app-av-table [dataSet]="simpleArray"></app-av-table>
+  <app-av-table [dataSet]="simpleArrayView"></app-av-table>
 </p>
 
 <app-ex-table-config-one>

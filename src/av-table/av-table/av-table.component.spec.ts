@@ -4,6 +4,7 @@ import { AvTableComponent } from './av-table.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MaterialModule} from '../../../modules/material/material.module';
+import {AvTableConfig} from './AvTableConfig';
 const materialModules = [
   MaterialModule,
   NoopAnimationsModule
@@ -39,7 +40,7 @@ describe('AvTableComponent', () => {
   });
 
   it ('should allow editing', () => {
-    component.configuration.properties = {isReadonly: false};
+    component.configuration.tableConfig = new AvTableConfig(false);
     component.initTable();
     expect(component.isTableReadOnly).toBe(true);
   });

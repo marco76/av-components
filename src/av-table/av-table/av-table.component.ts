@@ -11,18 +11,21 @@ import {
   ViewChild
 } from '@angular/core';
 import {MatCheckboxChange, MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
-import {AvTableConfig} from './AvTableConfig';
+import {AvTable} from './AvTable';
 import {AvTableColumnConfig} from './AvTableColumnConfig';
 import {MatDialog} from '@angular/material/dialog';
-import {AVTableTransaction} from './AVTableTransaction';
+import {AVTableTransaction} from './transaction/AVTableTransaction';
 import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {AvConfigurationPanelComponent} from '../av-configuration-panel/av-configuration-panel.component';
 import {AvColumnType} from './AvColumnType';
-import {AvTableStatus} from './AvTableStatus';
-import {AvRowDetailDirective} from './av-row-detail.directive';
+import {AvTableState} from './AvTableState';
 import {buildPDF} from '../export/FileHandler';
 import {AvConfirmDialogComponent} from '../av-confirm-dialog/av-confirm-dialog.component';
 import {AvConfirmDialogResponseType} from '../av-confirm-dialog/AvConfirmDialogResponseType';
+import {AvTableFactory} from './AvTableFactory';
+import {AvTransactionType} from './transaction/AvTransactionType';
+import {AvTransactionStateType} from './transaction/AvTransactionStateType';
+import {AvTableTransactionState} from './transaction/AvTableTransactionState';
 import {AvEditorComponent} from '../../av-form/av-editor/av-editor.component';
 
 @Component({
@@ -69,7 +72,6 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   @ViewChild('gridTemplate') gridTemplate: ElementRef;
 
   private _dataSet: MatTableDataSource<any> | Array<any>;
-  private openedRow: AvRowDetailDirective;
 
   columnPropertiesExtracted: any = {showDetail: false};
 
@@ -86,7 +88,7 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   isSelectionDeletable = false;
   numberOfSelectedItems = 0;
 
-  dataColumns: Array<AvTableColumnConfig>;
+  dataColumns?: Array<AvTableColumnConfig>;
 
   // Data source: a dataSource or an array must be passed as parameter
   @Input()
@@ -101,13 +103,13 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     this._dataSet = data;
   }
 
-  @Input() tableStatus?: AvTableStatus;
+  @Input() tableStatus?: AvTableState;
 
-  // The AvTableConfig contains the configuration of the table and the columns
-  @Input() configuration?: AvTableConfig = new AvTableConfig(null);
+  // The AvTable contains the configuration of the table and the columns
+  @Input() configuration?: AvTable = new AvTable(undefined, undefined);
 
   @Output() transaction?: EventEmitter<AVTableTransaction> = new EventEmitter<AVTableTransaction>();
-  @Input() transactionStatus?: string;
+  @Input() transactionState?: AvTableTransactionState;
 
   private paginator: MatPaginator;
   private sort: MatSort;
@@ -122,10 +124,10 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  constructor(public dialog: MatDialog, private changeDetector: ChangeDetectorRef) {
+  constructor(public dialog: MatDialog, public changeDetector: ChangeDetectorRef) {
   }
 
-  onCheckAll($event) {
+  onCheckAll($event: any) {
     this.selectedRows = [];
 
     if ($event.checked) {
@@ -191,11 +193,7 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   private initializeTechnicalColumns() {
     this.technicalColumnsBegin = [];
 
-    if (this.isTechnicalColumnsBeginVisible(this.tableStatus, this.configuration)) {
-      this.tableReadOnly = false;
-    } else {
-      this.tableReadOnly = true;
-    }
+    this.tableReadOnly = !this.isTechnicalColumnsBeginVisible();
 
     // show the select checkbox only if record and table are editable
     if (!this.tableReadOnly) {
@@ -205,25 +203,23 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
   /**
    * Check if the table configuration and the table content allow to update the content
-   * @param {AvTableStatus} tableStatus
-   * @param {AvTableConfig} tableConfiguration
    * @returns {boolean}
    */
-  private isTechnicalColumnsBeginVisible(tableStatus: AvTableStatus, tableConfiguration: AvTableConfig) {
+ private isTechnicalColumnsBeginVisible() {
     let visibility = false;
 
     if (this.tableStatus) {
       if (this.tableStatus.editable) {
         visibility = true;
-      } else if (this.tableStatus.editable === false) {
+      } else if (!this.tableStatus.editable) {
         visibility = false;
         return visibility;
       }
     }
 
     if (this.configuration) {
-      if (this.configuration.properties) {
-        if (this.configuration.properties.isReadonly) {
+      if (this.configuration.tableConfig) {
+        if (this.configuration.tableConfig.isReadOnly) {
           visibility = false;
         }
       }
@@ -241,21 +237,44 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.transactionStatus) {
-      if (this.demoMode || changes.transactionStatus.currentValue === 'committed') {
-        for (const item of this.selectedRows) {
-          item.status = 'deleted';
-          const position = this.dataSource.data.indexOf(item);
+   console.log('changes', changes);
 
-          this.dataSource.data.splice(position, 1);
-          this.transactionStatus = null;
-        }
-        this.selectedRows = [];
-        this.setStatusActions();
-      }
+    if (changes.transactionState && typeof changes.transactionState.currentValue !== 'undefined') {
+      const transactionState = changes.transactionState.currentValue as AvTableTransactionState;
+
+      switch (transactionState.type) {
+        case AvTransactionType.DELETE : this.transactionDelete(); break;
+        case AvTransactionType.UPDATE : this.transactionUpdate(); break;
     }
+  }
     if (changes.dataSet) {
       this.initTable();
+    }}
+
+  transactionUpdate() {
+   if (!this.transactionState) {
+     return
+   }
+    if (this.demoMode || AvTransactionStateType.SUCCEED === this.transactionState.state) {
+
+      this.setAllRecords(false);
+      this.setStatusActions();
+    }
+  }
+  transactionDelete() {
+   if (!this.transactionState){
+     return;
+   }
+    if (this.demoMode || AvTransactionStateType.SUCCEED === this.transactionState.state) {
+
+      for (const item of this.selectedRows) {
+        const position = this.dataSource.data.indexOf(item);
+        if (this.transactionState) {
+          this.transactionState = undefined;
+        }
+      }
+      this.selectedRows = [];
+      this.setStatusActions();
     }
   }
 
@@ -309,7 +328,9 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(
       result => {
-        this.transaction.emit(result);
+        if (this.transaction) {
+          this.transaction.emit(result);
+        }
       }
     );
   }
@@ -324,8 +345,10 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(
       result => {
-        console.log('result', result);
-        this.transaction.emit(result);
+        // return the object updated/created in the form to a transaction manager
+        if (this.transaction) {
+          this.transaction.emit(result);
+        }
       }
     );
   }
@@ -341,7 +364,11 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
         result => {
           switch (result) {
             case AvConfirmDialogResponseType.OK:
-            { this.transaction.emit({deletedRecords: this.selectedRows}); break; }
+            {
+              if (this.transaction) {
+                this.transaction.emit({deletedRecords: this.selectedRows}); }
+              break;
+            }
             default: break;
         }}
       );
@@ -362,7 +389,10 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     dialogRef.afterClosed()
       .subscribe(
         result => {
-          this.transaction.emit(result);
+          if (this.transaction) {
+            this.transaction.emit(result);
+          }
+
         }
       );
   }
@@ -377,27 +407,15 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
       const position = this.dataSource.data.indexOf(item);
 
       this.dataSource.data.splice(position, 1);
-      this.transactionStatus = null;
+      this.transactionState = undefined;
     }
     this.selectedRows = [];
     this.setStatusActions();
   }
 
-  isColumnDate(column: AvTableColumnConfig) {
-    return AvColumnType.DATE === column.type;
-  }
-
-      isColumnArray(column: AvTableColumnConfig): boolean {
-    return AvColumnType.ARRAY === column.type;
-  }
-
-  isColumnTable(column: AvTableColumnConfig) {
-    return AvColumnType.TABLE === column.type;
-  }
-
   getTableStatusReason() {
-    if (this.tableStatus && this.tableStatus.statusReason) {
-      return this.tableStatus.statusReason;
+    if (this.tableStatus && this.tableStatus.editabilityReason) {
+      return this.tableStatus.editabilityReason;
     }
     return '';
   }
@@ -436,39 +454,19 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
     row.selectedColumn = data;
   }
 
-  getDetailConfiguration(column: any): AvTableConfig {
+  getDetailConfiguration(column: any): AvTable {
+
     for (let i = 0; i < this.dataColumns.length; i++) {
       if (column === this.dataColumns[i].fieldName) {
         if (this.dataColumns[i].detailTable) {
           return this.dataColumns[i].detailTable;
         } else {
-          return new AvTableConfig(null, {isReadonly: true});
+          return AvTableFactory.buildTable(undefined);
         }
       }
     }
-    return new AvTableConfig([], {isReadonly: true});
-  }
 
-  isText(column: AvTableColumnConfig) {
-    if (!column.type) {
-      return true;
-    }
-
-    if (column.type === AvColumnType.STRING) {
-      return true;
-    }
-    if (column.type === AvColumnType.ANY) {
-      return true;
-    }
-    if (column.type === AvColumnType.NUMBER) {
-      return true;
-    }
-
-    return false;
-  }
-
-  isPdf(column: AvTableColumnConfig) {
-    return AvColumnType.FILE === column.type;
+    return AvTableFactory.buildTable(undefined);
   }
 
   onDownloadFile(content: string) {

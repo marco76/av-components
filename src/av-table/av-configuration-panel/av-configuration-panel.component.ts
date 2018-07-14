@@ -2,8 +2,9 @@ import {Component, Inject, OnInit, Output, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {AvTableColumnConfig} from '../av-table/AvTableColumnConfig';
 import {AvColumnPropertiesComponent} from '../av-column-properties/av-column-properties.component';
-import {AvTableConfig} from '../av-table/AvTableConfig';
+import {AvTable} from '../av-table/AvTable';
 import {AvTablePropertiesPanelComponent} from '../av-table-properties-panel/av-table-properties-panel.component';
+import {AvTableFactory} from '../av-table/AvTableFactory';
 
 @Component({
   selector: 'app-av-configuration-panel',
@@ -18,10 +19,10 @@ export class AvConfigurationPanelComponent implements OnInit {
   private avTablePropertiesPanelComponent: AvTablePropertiesPanelComponent;
 
   @Output()
-  public tableConfiguration: AvTableConfig;
+  public tableConfiguration: AvTable;
 
   columnsDefinition: Array<AvTableColumnConfig>;
-  originalConfiguration: AvTableConfig;
+  originalConfiguration: AvTable;
   originalColumnsDefinition: Array<AvTableColumnConfig>;
 
   constructor(public dialogRef: MatDialogRef<AvConfigurationPanelComponent>,
@@ -35,14 +36,15 @@ export class AvConfigurationPanelComponent implements OnInit {
   }
 
   onSave() {
-    this.dialogRef.close(new AvTableConfig(this.avColumnPropertiesComponent.updatedColumnsDef, this.avTablePropertiesPanelComponent.tableConfig.properties));
+    this.dialogRef.close();
+      return AvTableFactory.buildTable(this.avColumnPropertiesComponent.updatedColumnsDef, this.avTablePropertiesPanelComponent.table.tableConfig);
   }
 
-  updateConfiguration(tableConfiguration: AvTableConfig) {
+  updateConfiguration(tableConfiguration: AvTable) {
     this.tableConfiguration = tableConfiguration;
   }
 
   onExit() {
-    this.dialogRef.close(new AvTableConfig(this.originalColumnsDefinition, this.originalConfiguration.properties));
+    this.dialogRef.close(new AvTable(this.originalColumnsDefinition, this.originalConfiguration.tableConfig));
   }
 }

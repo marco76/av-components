@@ -6,5 +6,6 @@ export enum AvColumnType {
   ARRAY= 'ARRAY',
   BOOLEAN= 'BOOLEAN',
   TABLE= 'TABLE',
-  FILE = 'FILE'
+  FILE = 'FILE',
+  SELECT = 'SELECT'
 }

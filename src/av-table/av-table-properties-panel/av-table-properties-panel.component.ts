@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {AvTableConfig} from '../av-table/AvTableConfig';
+import {AvTable} from '../av-table/AvTable';
 
 @Component({
   selector: 'app-av-table-properties-panel',
@@ -8,7 +8,7 @@ import {AvTableConfig} from '../av-table/AvTableConfig';
 })
 export class AvTablePropertiesPanelComponent {
 
-  @Input() tableConfig: AvTableConfig;
+  @Input() table: AvTable;
 
   constructor() { }
 }

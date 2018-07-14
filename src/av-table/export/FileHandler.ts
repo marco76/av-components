@@ -17,7 +17,7 @@ export function buildPDF(pdfData: string) {
   window.open(url);
 }
 
-export function base64ToBlob(base64ToConvert: string, contentType: string, sliceSize?: number) {
+export function base64ToBlob(base64ToConvert: any, contentType: any, sliceSize?: number) {
   contentType = contentType || '';
   sliceSize = sliceSize || 512;
 

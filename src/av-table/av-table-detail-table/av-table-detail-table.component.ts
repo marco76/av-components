@@ -1,6 +1,9 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
-import {AvTableConfig} from '../av-table/AvTableConfig';
-import {AvTableStatus} from '../av-table/AvTableStatus';
+import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {AvTable} from '../av-table/AvTable';
+import {AvTableState} from '../av-table/AvTableState';
+import {AVTableTransaction} from '../av-table/transaction/AVTableTransaction';
+import {AvTableComponent} from '../av-table/av-table.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'av-table-detail-table',
@@ -10,14 +13,11 @@ import {AvTableStatus} from '../av-table/AvTableStatus';
 export class AvTableDetailTableComponent implements OnChanges {
 
   @Input() entry: any;
-  @Input() configuration: AvTableConfig;
+  @Input() configuration: AvTable;
 
-  defaultTableStatus = new AvTableStatus();
+  defaultTableStatus = new AvTableState();
 
   public constructor() {}
 
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log('building the detail grid', changes);
-  }
-
+  ngOnChanges(changes: SimpleChanges): void {}
 }

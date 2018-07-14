@@ -9,7 +9,7 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['./av-form-element.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AvFormElementComponent implements OnInit {
+export class AvFormElementComponent {
 
   @Input() element: AvTableColumnForm;
   @Input() form: FormGroup;
@@ -18,15 +18,11 @@ export class AvFormElementComponent implements OnInit {
   itemArrayRemovable: true;
 
   constructor(private cdRef: ChangeDetectorRef) {}
-  ngOnInit() {
-    console.log('record', this.record);
-  }
 
   removeItemFromArray(itemList: Array<any>, itemToRemove: any) {
      itemList.splice(itemList.indexOf(itemToRemove), 1);
   }
 
   openDetail(record: any){
-    console.log(record);
   }
 }

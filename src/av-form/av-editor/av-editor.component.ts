@@ -1,9 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { DateAdapter } from '@angular/material';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormGroup } from '@angular/forms';
-import { AvEditorService } from './av-editor.service';
+import {Component, Inject, OnInit} from '@angular/core';
+import {DateAdapter} from '@angular/material';
+import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {FormGroup} from '@angular/forms';
+import {AvEditorService} from './av-editor.service';
 import {AvTableColumnConfig} from '../../av-table/av-table/AvTableColumnConfig';
+
 
 @Component({
   selector: 'app-av-editor',
@@ -14,7 +15,7 @@ import {AvTableColumnConfig} from '../../av-table/av-table/AvTableColumnConfig';
 export class AvEditorComponent implements OnInit {
 
   dataColumns: Array<AvTableColumnConfig>;
-  debug: '';
+  debug: string = '';
   editedObject: any;
   form: FormGroup;
   editType: EditType;
@@ -23,7 +24,7 @@ export class AvEditorComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private avEditorService: AvEditorService,
               private dateAdapter: DateAdapter<Date>) {
-            this.dateAdapter.setLocale('de-CH');
+    this.dateAdapter.setLocale('de-CH');
   }
 
   ngOnInit() {
@@ -46,7 +47,7 @@ export class AvEditorComponent implements OnInit {
     if (EditType.CREATE === this.editType) {
       this.dialogRef.close({newRecord: this.editedObject});
     } else {
-      console.log('edited', this.form.value);
+      this.copyFormDataIntoRecord(this.editedObject, this.form);
       this.dialogRef.close({editedRecord: this.editedObject});
     }
   }
@@ -54,6 +55,16 @@ export class AvEditorComponent implements OnInit {
   onExit() {
     this.dialogRef.close(null);
   }
-}
 
-export enum EditType {CREATE, UPDATE}
+  public copyFormDataIntoRecord(obectToMerge: any,
+                                form: FormGroup) {
+
+    const fieldsInTheForm = Object.keys(form.value);
+    fieldsInTheForm.forEach((fieldName) => {
+      // undefined if the field didn't change
+      if (!(typeof form.value[fieldName] === 'object' && typeof form.value[fieldName].value === 'undefined')) {
+        obectToMerge[fieldName] = form.value[fieldName];
+      }
+    });
+  }
+}

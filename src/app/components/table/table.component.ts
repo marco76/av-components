@@ -10,9 +10,9 @@ import 'rxjs/add/operator/mergeMap';
   providers: []
 })
 export class TableComponent implements OnInit {
-   simpleArray = [{'uid' : '123434','name': 'Marco Molteni', 'role': 'developer'}, {
-     'uid' : '23434234','name': 'Bugs Bunny', 'role': 'actor'},
-     {'uid' : '3234234','name': 'Tony Stark', 'role': 'Iron Man'}]
+   simpleArray = [{'uid' : '123434', 'name': 'Marco Molteni', 'role': 'developer'}, {
+     'uid' : '23434234', 'name': 'Bugs Bunny', 'role': 'actor'},
+     {'uid' : '3234234', 'name': 'Tony Stark', 'role': 'Iron Man'}];
    simpleArrayView: Array<any>;
 
   constructor( ) {}
@@ -26,8 +26,9 @@ export class TableComponent implements OnInit {
   }
 
   updateSimpleArray(text: string) {
-      this.simpleArray = JSON.parse(text);;
-      console.log('new array', this.simpleArray);
+    console.log('update')
+      this.simpleArray = JSON.parse(text);
+      this.ngOnInit();
   }
 
   private basicClone<T>(any: T): T {

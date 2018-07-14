@@ -6,11 +6,10 @@ import {AvTableComponent} from './av-table/av-table.component';
 import {AvColumnPropertiesComponent} from './av-column-properties/av-column-properties.component';
 import {AvTableDetailTableComponent} from './av-table-detail-table/av-table-detail-table.component';
 import {AvRowDetailDirective} from './av-table/av-row-detail.directive';
-
 import {AvConfirmDialogComponent} from './av-confirm-dialog/av-confirm-dialog.component';
+import {MaterialModule} from '../modules/material.module';
 import {AvEditorComponent} from '../av-form/av-editor/av-editor.component';
 import {AvFormElementComponent} from '../av-form/av-form-element/av-form-element.component';
-import {MaterialModule} from '../modules/material.module';
 
 @NgModule({
   imports: [
