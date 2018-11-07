@@ -38,10 +38,11 @@ import {AvFormElementComponent} from '../av-form/av-form-element/av-form-element
     AvTableDetailPanelComponent,
     AvRowDetailDirective,
     AvTableDetailTableComponent,
-    AvConfirmDialogComponent
+    AvConfirmDialogComponent,
   ],
   entryComponents: [
-    AvConfirmDialogComponent
+    AvConfirmDialogComponent,
+    AvEditorComponent
   ]
 })
 export class AvTableModule {

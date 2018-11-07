@@ -19,7 +19,7 @@
       </span>
 
       <span *ngIf="isSelectionDeletable">
-      <button mat-button color="warn" (click)="onDelete()">Löschen <mat-icon>delete</mat-icon> </button>
+      <button mat-button color="warn" (click)="onDelete()">Delete <mat-icon>delete</mat-icon> </button>
       </span>
 
       <span class="push bottom av-toolbar-infos">
@@ -44,7 +44,8 @@
     </ng-container>
 
     <span>
-        <ng-container [matColumnDef]="column.fieldName" *ngFor="let column of dataColumns;">
+        <ng-container [matColumnDef]="column.fieldName"
+                      *ngFor="let column of dataColumns;">
           <mat-header-cell *matHeaderCellDef mat-sort-header
                            [ngStyle]="getStyle(column)">{{column.label}}</mat-header-cell>
 
@@ -52,6 +53,7 @@
 
             <span [ngSwitch]="column.type">
               <span *ngSwitchCase="'DATE'">{{row[column.fieldName] | date:'dd.MM.yyyy'}}</span>
+              <span *ngSwitchCase="'BOOLEAN'"><mat-icon>{{row[column.fieldName]? 'done' : '-'}}</mat-icon></span>
               <span *ngSwitchCase="'ARRAY'">
                 <mat-chip-list>
                   <span *ngFor="let element of row[column.fieldName]">
@@ -77,7 +79,6 @@
 
     <mat-header-row *matHeaderRowDef="columnsToShow"></mat-header-row>
 
-    <!-- the standard row definition -->
     <mat-row *matRowDef="let row; columns: columnsToShow;"
              matRipple
              [@itemStatus]="row.status"
@@ -115,7 +116,7 @@
 
 <ng-template #gridTemplate let-element>
   <div class="mat-row detail-table-container" [@detailExpand] style="overflow: hidden">
-    <av-table-detail-table [entry]="element[element.selectedColumn]"
+    <av-table-detail-table [data]="element[element.selectedColumn]"
                            [configuration]="getDetailConfiguration(element.selectedColumn)"
                            *ngIf="detailData">
     </av-table-detail-table>

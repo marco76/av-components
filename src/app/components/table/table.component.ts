@@ -10,8 +10,9 @@ import 'rxjs/add/operator/mergeMap';
   providers: []
 })
 export class TableComponent implements OnInit {
-   simpleArray = [{'uid' : '123434', 'name': 'Marco Molteni', 'role': 'developer'}, {
-     'uid' : '23434234', 'name': 'Bugs Bunny', 'role': 'actor'},
+   simpleArray = [
+     {'uid' : '123434', 'name': 'Marco Molteni', 'role': 'developer'},
+     {'uid' : '23434234', 'name': 'Bugs Bunny', 'role': 'actor'},
      {'uid' : '3234234', 'name': 'Tony Stark', 'role': 'Iron Man'}];
    simpleArrayView: Array<any>;
 

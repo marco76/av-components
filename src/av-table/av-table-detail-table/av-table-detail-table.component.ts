@@ -1,9 +1,6 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {AvTable} from '../av-table/AvTable';
 import {AvTableState} from '../av-table/AvTableState';
-import {AVTableTransaction} from '../av-table/transaction/AVTableTransaction';
-import {AvTableComponent} from '../av-table/av-table.component';
-import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'av-table-detail-table',
@@ -12,7 +9,7 @@ import {MatDialog} from '@angular/material/dialog';
 })
 export class AvTableDetailTableComponent implements OnChanges {
 
-  @Input() entry: any;
+  @Input() data: any;
   @Input() configuration: AvTable;
 
   defaultTableStatus = new AvTableState();

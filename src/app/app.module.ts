@@ -14,6 +14,7 @@ import { AvTwitterCardModule} from '../av-twitter-card/av-twitter-card.module';
 import { AvTableModule } from '../av-table/av-table.module';
 import { TableComponent } from './components/table/table.component';
 import { ExTableConfigOneComponent } from './components/table/ex-table-config-one/ex-table-config-one.component';
+import { ChipsComponent } from './components/chips/chips.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { ExTableConfigOneComponent } from './components/table/ex-table-config-on
     AppComponent,
     AutocompleteComponent,
     TableComponent,
-    ExTableConfigOneComponent
+    ExTableConfigOneComponent,
+    ChipsComponent,
   ],
   imports: [
     AppRoutingModule,

@@ -23,8 +23,8 @@ export class AutocompleteComponent implements OnInit {
 
   ngOnInit(): void {
     const demoObjects = ([
-      new AvAutocompleteItem('cool', 'value1', {name: 'object1'}),
-      new AvAutocompleteItem('cool2', 'value2', {name: 'object2'})
+      new AvAutocompleteItem('Text 1 ', 'value 1', {name: 'object1'}),
+      new AvAutocompleteItem('Second Option', 'value2', {name: 'object2'})
     ]);
     this.selectableObjects = Observable.of(demoObjects);
     this.arrayOfObjects = demoObjects;

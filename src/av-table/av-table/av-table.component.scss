@@ -80,7 +80,7 @@
 }
 
 .detail-table-container {
-  margin-left: 150px;
+  margin-left: 5vw;
 }
 
 .download {
@@ -114,6 +114,11 @@
   border-bottom-width: 1px;
   border-bottom-style: solid;
   padding-left: 50px;
+}
+
+.mat-toolbar-multiple-rows {
+  height: 40px!important;
+  min-height: 40px!important;
 }
 
 

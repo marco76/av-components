@@ -79,7 +79,6 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   dataArray: Array<any>;
   demoMode = false;
   tableReadOnly = true;
-
   technicalColumnsBegin: Array<AvTableColumnConfig>;
   technicalColumnsEnd: Array<AvTableColumnConfig> = [{fieldName: 'expand', label: 'expand'}];
   columnsToShow: Array<string> = [];
@@ -87,7 +86,6 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   isSelectionEditable = false;
   isSelectionDeletable = false;
   numberOfSelectedItems = 0;
-
   dataColumns?: Array<AvTableColumnConfig>;
 
   // Data source: a dataSource or an array must be passed as parameter
@@ -120,8 +118,10 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   setDataSourceAttributes() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
   }
 
   constructor(public dialog: MatDialog, public changeDetector: ChangeDetectorRef) {
@@ -205,7 +205,7 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
    * Check if the table configuration and the table content allow to update the content
    * @returns {boolean}
    */
- private isTechnicalColumnsBeginVisible() {
+  private isTechnicalColumnsBeginVisible() {
     let visibility = false;
 
     if (this.tableStatus) {
@@ -237,34 +237,40 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-   console.log('changes', changes);
+    console.log('changes', changes);
 
     if (changes.transactionState && typeof changes.transactionState.currentValue !== 'undefined') {
       const transactionState = changes.transactionState.currentValue as AvTableTransactionState;
 
       switch (transactionState.type) {
-        case AvTransactionType.DELETE : this.transactionDelete(); break;
-        case AvTransactionType.UPDATE : this.transactionUpdate(); break;
+        case AvTransactionType.DELETE :
+          this.transactionDelete();
+          break;
+        case AvTransactionType.UPDATE :
+          this.transactionUpdate();
+          break;
+      }
     }
-  }
     if (changes.dataSet) {
       this.initTable();
-    }}
+    }
+  }
 
   transactionUpdate() {
-   if (!this.transactionState) {
-     return
-   }
+    if (!this.transactionState) {
+      return;
+    }
     if (this.demoMode || AvTransactionStateType.SUCCEED === this.transactionState.state) {
 
       this.setAllRecords(false);
       this.setStatusActions();
     }
   }
+
   transactionDelete() {
-   if (!this.transactionState){
-     return;
-   }
+    if (!this.transactionState) {
+      return;
+    }
     if (this.demoMode || AvTransactionStateType.SUCCEED === this.transactionState.state) {
 
       for (const item of this.selectedRows) {
@@ -363,14 +369,16 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
       dialogRef.afterClosed().subscribe(
         result => {
           switch (result) {
-            case AvConfirmDialogResponseType.OK:
-            {
+            case AvConfirmDialogResponseType.OK: {
               if (this.transaction) {
-                this.transaction.emit({deletedRecords: this.selectedRows}); }
+                this.transaction.emit({deletedRecords: this.selectedRows});
+              }
               break;
             }
-            default: break;
-        }}
+            default:
+              break;
+          }
+        }
       );
     } else {
       this.deleteRow();
@@ -435,7 +443,6 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   onSelectExpand(row: any) {
-
     row.selectedTemplate = this.panelTemplate;
     if (typeof row.isExpanded === 'undefined') {
       row.isExpanded = false;
@@ -455,15 +462,23 @@ export class AvTableComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   getDetailConfiguration(column: any): AvTable {
+    if (!this.dataColumns) {
+      return AvTableFactory.buildTable(undefined);
+    }
 
     for (let i = 0; i < this.dataColumns.length; i++) {
       if (column === this.dataColumns[i].fieldName) {
         if (this.dataColumns[i].detailTable) {
-          return this.dataColumns[i].detailTable;
+          const table = this.dataColumns[i].detailTable;
+          if (table) {
+            return table;
+          }
         } else {
           return AvTableFactory.buildTable(undefined);
         }
       }
+
+
     }
 
     return AvTableFactory.buildTable(undefined);

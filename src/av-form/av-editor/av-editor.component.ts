@@ -4,7 +4,7 @@ import {MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {FormGroup} from '@angular/forms';
 import {AvEditorService} from './av-editor.service';
 import {AvTableColumnConfig} from '../../av-table/av-table/AvTableColumnConfig';
-
+import {EditType} from './edit-types';
 
 @Component({
   selector: 'app-av-editor',
