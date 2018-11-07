@@ -1,0 +1,6 @@
+export enum AvStatusType {
+  info = 'info',
+  success = 'success',
+  warning = 'warning',
+  error = 'error'
+}

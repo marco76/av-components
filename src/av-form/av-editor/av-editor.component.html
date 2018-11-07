@@ -1,0 +1,17 @@
+<div class="container container-column">
+      <form [formGroup]="form">
+        <div *ngFor="let column of dataColumns" class="form-row">
+          <app-av-form-element [form]="form"
+                               [element]="column"
+                               [record]="editedObject">
+
+          </app-av-form-element>
+        </div>
+        <button mat-button (click)="onSave()">
+          Save
+        </button>
+        <button mat-button (click)="onExit()">
+          Cancel
+        </button>
+      </form>
+</div>

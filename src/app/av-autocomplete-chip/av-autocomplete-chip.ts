@@ -25,14 +25,13 @@ export class AvAutocompleteChip implements OnInit {
   constructor() {
   }
 
-  autoProperties: AvAutocompleteProperties = {placeholder : 'Set your placeholder', cancelIcon: 'clear'};
+  autoProperties: AvAutocompleteProperties = {placeholder: 'Set your placeholder', cancelIcon: 'clear'};
 
   ngOnInit(): void {
     if (this.properties) {
       Object.assign(this.autoProperties, this.properties);
     }
   }
-
 
   onClearContent() {
     delete this.inputText;

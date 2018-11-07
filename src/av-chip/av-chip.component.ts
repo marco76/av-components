@@ -13,6 +13,7 @@ export class AvChip implements OnInit {
   @Input() label: string;
   @Input() color: string;
   @Input() properties?: AvChipProperties;
+  property : string = '';
 
   ngOnInit() {
 
